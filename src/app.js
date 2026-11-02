@@ -38,6 +38,7 @@ const lead=a=>`<section class="lead" aria-label="Vezető hír">
       <div class="btns"><a class="btn-light" href="${page(a)}">Tovább a hírhez</a><a class="btn-ghost" href="${esc(safeUrl(a.url))}" target="_blank" rel="noopener">Eredeti cikk</a></div>
     </article>
     <aside class="lead-hu">
+      <div class="rot lead-photo" data-slot="1" aria-hidden="true"></div>
       <span class="tile">${svg("globe",24,2)}</span>
       <span class="label">Mit jelent ez itthon?</span>
       <p>${esc(a.hu)}</p>
@@ -69,6 +70,7 @@ function trendSection(list,all){
   if(!list.length)return "";
   const shown=all?list:list.slice(0,3);
   return `<section class="sec trends" aria-label="Trendfigyelő">
+    <div class="rot trend-photo" data-slot="2" aria-hidden="true"></div>
     <div class="sec-head"><h2>Trendfigyelő</h2>${!all&&list.length>3?`<button type="button" class="link-btn" data-go="${TREND}">Mind a ${list.length} trend →</button>`:""}</div>
     <p class="intro">Munkahelyi jelenségek, amelyekről most beszélnek: mit jelentenek, mit mutatnak róluk a friss kutatások, és mennyire ismerősek itthon.</p>
     <div class="grid">${shown.map(trendCard).join("")}</div>
@@ -97,6 +99,46 @@ function render(){
   if(days.length>st.pages)html+=`<button type="button" class="more" id="more">Korábbi napok</button>`;
   main.innerHTML=html;
   const m=$("#more");if(m)m.onclick=()=>{st.pages+=4;render()};
+  initRotators();
+}
+/* Váltakozó hangulatképek: minden hely más képpel indul, 9 másodpercenként áttűnik.
+   Csökkentett mozgás beállításnál csak egy állókép jelenik meg. */
+const POOL=(CFG.photos||[]).slice();
+for(let i=POOL.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[POOL[i],POOL[j]]=[POOL[j],POOL[i]]}
+const still=matchMedia("(prefers-reduced-motion: reduce)").matches;
+let tick=0;
+function imgEl(name){
+  const im=new Image();
+  im.alt="";im.decoding="async";
+  im.srcset=`assets/photos/${name}-s.webp 800w, assets/photos/${name}.webp 1600w`;
+  im.sizes="(max-width: 700px) 100vw, 1200px";
+  im.src=`assets/photos/${name}.webp`;
+  return im;
+}
+function show(el,idx){
+  if(!POOL.length)return;
+  const name=POOL[((idx%POOL.length)+POOL.length)%POOL.length];
+  if(el.dataset.cur===name)return;
+  const im=imgEl(name);
+  im.onload=()=>{
+    el.appendChild(im);
+    requestAnimationFrame(()=>im.classList.add("on"));
+    const old=[...el.querySelectorAll("img")].filter(x=>x!==im);
+    setTimeout(()=>old.forEach(x=>x.remove()),1400);
+  };
+  el.dataset.cur=name;
+}
+function slotIndex(el){const s=+el.dataset.slot||0;return Math.round(s*POOL.length/3)+tick}
+function initRotators(){
+  document.querySelectorAll(".rot:not([data-init])").forEach(el=>{el.dataset.init="1";show(el,slotIndex(el))});
+}
+initRotators();
+if(!still&&POOL.length>1){
+  setInterval(()=>{
+    if(document.hidden)return;
+    tick++;
+    document.querySelectorAll(".rot").forEach((el,i)=>setTimeout(()=>show(el,slotIndex(el)),i*1500));
+  },9000);
 }
 function setTopic(t){st.topic=t;st.pages=4;buildNav();render();window.scrollTo({top:0})}
 function buildNav(){

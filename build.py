@@ -174,6 +174,7 @@ def build_index(items):
     body = head(SITE["name"], SITE["description"], "", "")
     body += header("", nav_html="")
     body += f"""
+<div class="band rot" data-slot="0" aria-hidden="true"><div class="band-txt wrap"><span>Globális munkaerőpiac, magyar szűrővel</span></div></div>
 <div class="wrap">
   <div class="bar">
     <span class="eyebrow" id="dateline">{e(long_date(news[0]["day"]) if news else "")}</span>
@@ -363,7 +364,15 @@ def build_assets(items, updated):
     (OUT / "data").mkdir(parents=True, exist_ok=True)
     shutil.copy(ROOT / "src/style.css", OUT / "assets/style.css")
     shutil.copy(ROOT / "src/app.js", OUT / "assets/app.js")
-    cfg = {"topics": TOPICS, "icons": ICONS}
+    photos = []
+    src_ph = ROOT / "src/photos"
+    if src_ph.exists():
+        (OUT / "assets/photos").mkdir(parents=True, exist_ok=True)
+        for p in sorted(src_ph.glob("*.webp")):
+            shutil.copy(p, OUT / "assets/photos" / p.name)
+            if not p.stem.endswith("-s"):
+                photos.append(p.stem)
+    cfg = {"topics": TOPICS, "icons": ICONS, "photos": photos}
     (OUT / "assets/config.js").write_text("window.HRM=" + json.dumps(cfg, ensure_ascii=False) + ";\n", encoding="utf-8")
     pub = [{k: v for k, v in a.items() if k != "slug"} for a in items]
     (OUT / "data/articles.json").write_text(json.dumps({"updated": updated, "articles": pub}, ensure_ascii=False), encoding="utf-8")

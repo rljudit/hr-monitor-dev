@@ -201,3 +201,22 @@ footer a:hover{text-decoration:underline}
 .cmp{border:1px dashed var(--border);border-radius:12px;padding:12px 16px;background:var(--surface);font-size:15px;color:var(--ink-2)}
 .cmp summary{cursor:pointer;font-weight:600;color:var(--ink)}
 .cmp p{margin:8px 0 0;line-height:1.6}
+
+/* Váltakozó hangulatképek */
+.rot{position:relative;overflow:hidden;background:var(--dark-2)}
+.rot img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity 1.2s ease}
+.rot img.on{opacity:1}
+.band{height:200px}
+.band::after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,rgba(35,43,58,.82) 0%,rgba(35,43,58,.35) 55%,rgba(35,43,58,.15) 100%);z-index:1}
+.band-txt{position:relative;z-index:2;height:100%;display:flex;align-items:flex-end;padding-block:0 22px}
+.band-txt span{color:#fff;font-size:clamp(20px,3vw,30px);font-weight:700;letter-spacing:-.02em;max-width:560px;line-height:1.2}
+.lead-hu .lead-photo{margin:-32px -32px 4px;height:160px;border-radius:16px 16px 0 0}
+.trends .trend-photo{margin:-32px -32px 0;height:150px;border-radius:24px 24px 0 0}
+.trends .trend-photo::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(243,250,254,0) 40%,rgba(243,250,254,.9) 100%);z-index:1}
+@media (max-width:600px){
+  .band{height:140px}
+  .band-txt{padding-block:0 16px}
+  .lead-hu .lead-photo{margin:-24px -24px 4px;height:140px}
+  .trends .trend-photo{margin:-20px -16px 0;height:110px;border-radius:16px 16px 0 0}
+}
+@media (prefers-reduced-motion:reduce){.rot img{transition:none}}

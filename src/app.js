@@ -38,7 +38,7 @@ const lead=a=>`<section class="lead" aria-label="Vezető hír">
       <div class="btns"><a class="btn-light" href="${page(a)}">Tovább a hírhez</a><a class="btn-ghost" href="${esc(safeUrl(a.url))}" target="_blank" rel="noopener">Eredeti cikk</a></div>
     </article>
     <aside class="lead-hu">
-      <div class="rot lead-photo" data-slot="1" aria-hidden="true"></div>
+      <div class="rot duo lead-photo" data-slot="0" data-tint="turq" aria-hidden="true"></div>
       <span class="tile">${svg("globe",24,2)}</span>
       <span class="label">Mit jelent ez itthon?</span>
       <p>${esc(a.hu)}</p>
@@ -53,7 +53,7 @@ function stats(list){
       <b>${esc(a.stat.value)}</b>
       <span class="lbl">${esc(a.stat.label)}</span>
       <span class="from">A hírből: <em>${esc(a.title)}</em></span>
-    </a>`).join("")}</div></section>`;
+    </a>`).join("")}<div class="rot duo stat-photo" data-slot="1" data-tint="blue" aria-hidden="true"></div></div></section>`;
 }
 const trendCard=a=>`<article class="trend" id="${aid(a)}">
     <div class="trend-head"><span class="tile">${svg(a.icon||"trending-up",24,1.8)}</span>
@@ -70,9 +70,13 @@ function trendSection(list,all){
   if(!list.length)return "";
   const shown=all?list:list.slice(0,3);
   return `<section class="sec trends" aria-label="Trendfigyelő">
-    <div class="rot trend-photo" data-slot="2" aria-hidden="true"></div>
-    <div class="sec-head"><h2>Trendfigyelő</h2>${!all&&list.length>3?`<button type="button" class="link-btn" data-go="${TREND}">Mind a ${list.length} trend →</button>`:""}</div>
-    <p class="intro">Munkahelyi jelenségek, amelyekről most beszélnek: mit jelentenek, mit mutatnak róluk a friss kutatások, és mennyire ismerősek itthon.</p>
+    <div class="trend-top">
+      <div class="trend-intro">
+        <div class="sec-head"><h2>Trendfigyelő</h2>${!all&&list.length>3?`<button type="button" class="link-btn" data-go="${TREND}">Mind a ${list.length} trend →</button>`:""}</div>
+        <p class="intro">Munkahelyi jelenségek, amelyekről most beszélnek: mit jelentenek, mit mutatnak róluk a friss kutatások, és mennyire ismerősek itthon.</p>
+      </div>
+      <div class="rot duo trend-photo" data-slot="2" data-tint="turq" aria-hidden="true"></div>
+    </div>
     <div class="grid">${shown.map(trendCard).join("")}</div>
   </section>`;
 }
@@ -124,7 +128,7 @@ function show(el,idx){
     el.appendChild(im);
     requestAnimationFrame(()=>im.classList.add("on"));
     const old=[...el.querySelectorAll("img")].filter(x=>x!==im);
-    setTimeout(()=>old.forEach(x=>x.remove()),1400);
+    setTimeout(()=>old.forEach(x=>x.remove()),700);
   };
   el.dataset.cur=name;
 }
@@ -137,8 +141,8 @@ if(!still&&POOL.length>1){
   setInterval(()=>{
     if(document.hidden)return;
     tick++;
-    document.querySelectorAll(".rot").forEach((el,i)=>setTimeout(()=>show(el,slotIndex(el)),i*1500));
-  },9000);
+    document.querySelectorAll(".rot").forEach((el,i)=>setTimeout(()=>show(el,slotIndex(el)),i*2500));
+  },12000);
 }
 function setTopic(t){st.topic=t;st.pages=4;buildNav();render();window.scrollTo({top:0})}
 function buildNav(){

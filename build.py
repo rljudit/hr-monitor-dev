@@ -174,7 +174,6 @@ def build_index(items):
     body = head(SITE["name"], SITE["description"], "", "")
     body += header("", nav_html="")
     body += f"""
-<div class="band rot" data-slot="0" aria-hidden="true"><div class="band-txt wrap"><span>Globális munkaerőpiac, magyar szűrővel</span></div></div>
 <div class="wrap">
   <div class="bar">
     <span class="eyebrow" id="dateline">{e(long_date(news[0]["day"]) if news else "")}</span>
